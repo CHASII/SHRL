@@ -1,0 +1,128 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2019/1/2 14:27
+# @Author  : Mr.Cai
+# @Staging    :
+# @File    : settings.py
+# @Software: PyCharm
+
+import logging
+import platform
+
+# Jenkins相关配置
+Jks = {
+	'Staging': {
+		'website': 'http://jks-sit.example.com',
+		'user': 'example',
+		'passwd':"",
+	},
+	'Prod': {
+		'website': 'http://jks.example.com',
+		'user': 'shrl',
+		'passwd': '',
+	},
+	'home': './tmp'
+}
+
+# Jira相关配置
+Jira = {
+	'host': 'http://jira.scm.example.com',
+	'user': 'shrl_robot',
+	'pass': ''
+}
+
+# 配置仓库相关配置
+GitLab = {
+	'Staging': {
+		'url': 'http://git-sit.example.com',
+		'git_token': '',
+		'repository_name': 'celebi/cfg-center'
+	},
+	'Prod': {
+		'url': 'http://git.example.com',
+		'git_token': '',
+		'repository_name': 'celebi/cfg-center'
+	}
+}
+
+
+# 数据库相关配置
+DB = {
+		'db_host': '172.20.13.70',
+		'db_user': 'shrl',
+		'db_pass': '',
+		'db_name': 'SHRL'
+	}
+
+# 邮箱相关配置
+Email = {
+	'sender_host': 'smtp.exmail.qq.com',
+	'sender_name': 'ops_noc@example.com',
+	'sender_nickname': '运维组<ops_noc@example.com>',
+	'sender_password': '',
+	'receiver_name': 'admin@example.com',
+	'receiver_nickname': '运维组长<admin@example.com>'
+}
+
+# 钉钉相关配置
+DingTalk = {
+	"预发布试点1":"xxx",
+	"预发布试点2":"xxx"
+	}
+
+# 系统环境相关配置
+System = {
+	'Staging': {
+		'localip': 'http://172.20.13.6',
+	},
+	'Prod': {
+		'localip': 'http://172.20.13.70',
+	},
+	'gitsite': 'http://git.scm.example.com',
+	'gitpath': '/usr/bin/git',
+	'pythonpath': '/usr/bin/python',
+	'logpath': {
+		'Windows':r'..\logs\JiraJks.log',
+		'Linux':r'./logs/JiraJks.log'
+	},
+	'loglevel': 'INFO',
+	'log_port': '8888',
+	'api_port': '9999',
+	'publish_record': '3',
+}
+
+# 环境及颜色相关配置
+Color = {
+	'Staging': '<font color=#0000dd>Staging</font>',			#黄色
+	'Prod': '<font color=#0000dd>Prod</font>',      			#黄色
+	'Failure': '<font color=#dd0000>Failure</font>',			#红色
+	'Success': '<font color=#00dd00>Success</font>',			#绿色
+	'Started': '<font color=#dddd00>Started</font>',			#蓝色
+	'Aborted': '<font color=#FF8C00>Aborted</font>',			#橙色
+	'Prepare': '<font color=#800080>Prepare</font>'			    #紫色
+}
+
+# 环境相关图标
+Icon = {
+	'origin': 'https://img.shields.io/badge/Build-Started-blue.svg',
+	'Staging': {
+		'url': 'https://img.shields.io/logo/v1/Env-Staging-yellow.svg'
+	},
+	'Prod': {
+		'url': 'https://img.shields.io/logo/v1/Env-Prod-yellow.svg',
+	},
+	'Prepared': 'https://img.shields.io/logo/v1/Build-Prepare-purple.svg',
+	'Started': 'https://img.shields.io/logo/v1/Build-Started-blue.svg',
+	'Success': 'https://img.shields.io/logo/v1/Build-Success-green.svg',
+	'Aborted': 'https://img.shields.io/logo/v1/Build-Aborted-orange.svg',
+	'Failure': 'https://img.shields.io/logo/v1/Build-Failure-red.svg',
+	'Waiting': ''
+}
+
+log_fmt = '%(asctime)s %(filename)s [line:%(lineno)d] %(levelname)s：%(message)s'
+if platform.system() == 'Windows':
+	logpath = System['logpath']['Windows']
+else:
+	logpath = System['logpath']['Linux']
+logging.basicConfig(level=logging.DEBUG, format=log_fmt, datefmt='[%Y-%m-%d %H:%M:%S]', filename=logpath, filemode='a')
+logger = logging.getLogger(__name__)

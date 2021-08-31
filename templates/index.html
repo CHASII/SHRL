@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Jenkins_{{JIRA_KEY}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <script src="../static/js/jquery.min.js" ></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" charset="utf-8">
+     $(function() {
+         if (typeof String.prototype.startsWith != 'function') {
+             String.prototype.startsWith = function (prefix){
+                 return this.slice(0, prefix.length) === prefix;
+             };
+         }
+         var output = $("#stdout-output").html();
+         function addToOutput(msg) {
+             /* output = $("#output").html() + '<br/>' + msg;*/
+             if (msg.startsWith('stderr:')) {
+                 if (!$('a[href="#stderr"]').hasClass("alarm-report") && $('ul[role="tablist"] li.active a').attr('href') != '#stderr') {
+                     $('a[href="#stderr"]').addClass("alarm-report")
+                 }
+                 output = $("#stderr-output").html() + msg.replace(/^stderr:/,'');
+                 $("#stderr-output").html(output);
+                 $('#stderr-output').scrollTop($('#stderr-output')[0].scrollHeight);
+             }else {
+                 if (!$('a[href="#stdout"]').hasClass("alarm-report") && $('ul[role="tablist"] li.active a').attr('href') != '#stdout') {
+                     $('a[href="#stdout"]').addClass("alarm-report")
+                 }
+                 output = $("#stdout-output").html() + msg.replace(/^stdout:/,'');
+                 $("#stdout-output").html(output);
+                 $('#stdout-output').scrollTop($('#stdout-output')[0].scrollHeight);
+             }
+         }
+         $('a#clear').click(function() {
+             var active_tab = $('ul[role="tablist"] li.active a').attr('href');
+             $(active_tab + '-output').html('');
+         })
+         $('a#load').click(function() {
+             var active_tab = $('ul[role="tablist"] li.active a').attr('href');
+             ws.send(JSON.stringify({room:'load',msg:active_tab.replace(/^#/,'')}));
+         })
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if ($(e.target).hasClass("alarm-report")) {
+                $(e.target).removeClass("alarm-report")
+            }
+        })
+         if ("MozWebSocket" in window) {
+             WebSocket = MozWebSocket;
+         }
+         if (WebSocket) {
+             var ws = new WebSocket("ws://{{REQUEST_HOST}}/show");
+             ws.onopen = function() {};
+             ws.onmessage = function (evt) {
+                 addToOutput(evt.data);
+             };
+             ws.onclose = function() {};
+         } else {
+             alert("WebSocket not supported");
+         }
+     })
+    </script>
+    <style type="text/css">
+      body{
+        overflow: hidden;
+      }
+     .input-group {
+         margin-bottom: 5px;
+     }
+     .input-group-addon {
+         background-color:#337ab7;
+         color:#fff;
+         border-color:#337ab7;
+     }
+     li[aria-selected="true"] {
+         display:none;
+     }
+     li[role="presentation"] a{
+         border-bottom-left-radius:0;
+         border-bottom-right-radius:0;
+     }
+     .row{
+  margin: 0;
+}
+     .well {
+         color:#eee;
+         border-top:0;
+         border-top-left-radius:0;
+         border-top-right-radius:0;
+     }
+     #stdout-output,#stderr-output {
+         background-color:#333;
+         height: calc(100vh - 40px);
+         overflow-y:auto;
+         padding:10px;
+         margin: 0;
+     }
+     .alarm-report {
+         border:2px solid #333;
+         border-bottom:none;
+         animation: flash 1s linear infinite;
+     }
+
+     @keyframes flash{
+         from {
+             border-color: #333;
+         }
+         to {
+             border-color: red;
+         }
+     }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <!--<div class="col-md-offset-2 col-md-8">-->
+      <div class="col-md-24">
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills nav-justified" role="tablist">
+          <li role="presentation" class="active">
+            <a href="#stdout" aria-controls="stdout" role="tab" data-toggle="tab">自助发布实时日志系统</a>
+          </li>
+          <!--<li role="presentation">
+            <a href="#stderr" aria-controls="stderr" role="tab" data-toggle="tab">错误输出</a>
+          </li>
+          <li role="presentation">
+            <a href="javascript:void(0);" id="load">载入历史</a>
+          </li>
+          <li role="presentation">
+            <a href="javascript:void(0);" id="clear">清空</a>
+          </li>-->
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="stdout">
+            <pre contentEditable="false" class="well" id="stdout-output"></pre>
+          </div>
+          <!--<div role="tabpanel" class="tab-pane" id="stderr">-->
+            <!--<pre contentEditable="false" class="well" id="stderr-output"></pre>-->
+          <!--</div>-->
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
